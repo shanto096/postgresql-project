@@ -16,7 +16,7 @@ const UserDetailModal = ({ open, onClose }) => {
           &times;
         </button>
 
-        <h2 className="text-4xl font-extrabold text-center text-gray-800 mb-8">ব্যবহারকারীর প্রোফাইল</h2>
+        <h2 className="text-4xl font-extrabold text-center text-gray-800 mb-8">User Profile</h2>
 
         <div className="flex flex-col items-center mb-8">
           <div className="w-28 h-28 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-6xl font-bold mb-4 border-4 border-blue-300 shadow-lg">
@@ -28,35 +28,43 @@ const UserDetailModal = ({ open, onClose }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* মালিকানাধীন প্রজেক্ট */}
           <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">মালিকানাধীন প্রজেক্টস ({user.ownedProjects?.length || 0})</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              Owned Projects ({user.ownedProjects?.length || 0})
+            </h3>
             {user.ownedProjects && user.ownedProjects.length > 0 ? (
               <ul className="space-y-2 max-h-40 overflow-y-auto pr-2">
                 {user.ownedProjects.map((project) => (
-                  <li key={project.id} className="text-gray-700 font-medium bg-white p-2 rounded-lg shadow-xs border border-gray-100">
+                  <li
+                    key={project.id}
+                    className="text-gray-700 font-medium bg-white p-2 rounded-lg shadow-xs border border-gray-100"
+                  >
                     {project.name}
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-gray-600">কোনো মালিকানাধীন প্রজেক্ট নেই।</p>
+              <p className="text-gray-600">No owned projects.</p>
             )}
           </div>
 
-          {/* সদস্যপদ */}
           <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 shadow-sm">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">সদস্যপদ ({user.memberships?.length || 0})</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-4">
+              Memberships ({user.memberships?.length || 0})
+            </h3>
             {user.memberships && user.memberships.length > 0 ? (
               <ul className="space-y-2 max-h-40 overflow-y-auto pr-2">
                 {user.memberships.map((membership) => (
-                  <li key={membership.project_id} className="text-gray-700 font-medium bg-white p-2 rounded-lg shadow-xs border border-gray-100">
+                  <li
+                    key={membership.project_id}
+                    className="text-gray-700 font-medium bg-white p-2 rounded-lg shadow-xs border border-gray-100"
+                  >
                     {membership.project_name} (<span className="capitalize">{membership.role}</span>)
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-gray-600">কোনো সদস্যপদ নেই।</p>
+              <p className="text-gray-600">No memberships found.</p>
             )}
           </div>
         </div>
@@ -66,13 +74,13 @@ const UserDetailModal = ({ open, onClose }) => {
             onClick={onClose}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
           >
-            বন্ধ করুন
+            Close
           </button>
           <button
             onClick={logout}
             className="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105"
           >
-            লগআউট
+            Logout
           </button>
         </div>
       </div>
