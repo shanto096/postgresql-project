@@ -1,7 +1,6 @@
 const { Pool } = require('pg');
-require('dotenv').config(); // .env ফাইল থেকে পরিবেশ ভেরিয়েবল লোড করুন
+require('dotenv').config();
 
-// PostgreSQL ডেটাবেস সংযোগ পুল সেটআপ করুন
 const pool = new Pool({
     user: process.env.PG_USER,
     host: process.env.PG_HOST,
@@ -10,23 +9,23 @@ const pool = new Pool({
     port: process.env.PG_PORT,
 });
 
-// ডেটাবেস সংযোগ পরীক্ষা এবং টেবিল তৈরি ফাংশন
 const connectDB = async() => {
     try {
-        await pool.connect(); // পুল থেকে একটি ক্লায়েন্ট পান
-        console.log('PostgreSQL connected successfully');
+        await pool.connect();
+        console.log('PostgreSQL connected successfully ');
 
-        // যদি টেবিল না থাকে তবে সেগুলো তৈরি করুন
+        // users টেবিলে role কলাম যোগ করা হয়েছে
         await pool.query(`
       CREATE TABLE IF NOT EXISTS users (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         username VARCHAR(255) UNIQUE NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
+        role VARCHAR(50) DEFAULT 'user', -- নতুন role কলাম
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `);
-        // console.log('users table created successfully');
+        // console.log('users টেবিল তৈরি হয়েছে বা ইতিমধ্যেই বিদ্যমান।');
 
         await pool.query(`
       CREATE TABLE IF NOT EXISTS projects (
@@ -37,36 +36,37 @@ const connectDB = async() => {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       );
     `);
-        // console.log('projects table created successfully');
+        // console.log('projects টেবিল তৈরি হয়েছে বা ইতিমধ্যেই বিদ্যমান।');
 
         await pool.query(`
       CREATE TABLE IF NOT EXISTS project_members (
         project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        role VARCHAR(50) DEFAULT 'member', -- e.g., 'admin', 'member'
+        role VARCHAR(50) DEFAULT 'member',
         PRIMARY KEY (project_id, user_id)
       );
     `);
-        // console.log('project_members table created successfully');
+        // console.log('project_members টেবিল তৈরি হয়েছে বা ইতিমধ্যেই বিদ্যমান।');
 
         await pool.query(`
       CREATE TABLE IF NOT EXISTS tasks (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         project_id UUID NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-        assigned_to UUID REFERENCES users(id) ON DELETE SET NULL, -- টাস্কটি কোন সদস্যকে দেওয়া হয়েছে
+        assigned_to UUID REFERENCES users(id) ON DELETE SET NULL,
         title VARCHAR(255) NOT NULL,
         description TEXT,
-        status VARCHAR(50) DEFAULT 'to-do', -- 'to-do', 'processing', 'done'
+        status VARCHAR(50) DEFAULT 'to-do',
         due_date TIMESTAMP WITH TIME ZONE,
+        image_url VARCHAR(255),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
         CHECK (status IN ('to-do', 'processing', 'done'))
       );
     `);
-        // console.log('tasks table created successfully');
+        // console.log('tasks টেবিল তৈরি হয়েছে বা ইতিমধ্যেই বিদ্যমান।');
 
     } catch (error) {
-        console.error('PostgreSQL connection failed:', error.message);
-        process.exit(1); // অ্যাপ্লিকেশন বন্ধ করুন
+        console.error('PostgreSQL ডেটাবেসের সাথে সংযোগ করতে ব্যর্থ হয়েছে:', error.message);
+        process.exit(1);
     }
 };
 

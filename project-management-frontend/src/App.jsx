@@ -6,6 +6,8 @@ import RegisterForm from './components/RegisterForm';
 import DashboardPage from './page/DashboardPage';
 import HomePage from './page/HomePage';
 import { AuthProvider } from './context/AuthContext';
+import SuperAdminDashboardPage from './page/SuperAdminDashboardPage';
+import NotFoundPage from './components/NotFoundPage';
 
 function AppWithHeaderControl() {
   const location = useLocation();
@@ -22,7 +24,10 @@ function AppWithHeaderControl() {
           <Route path="/dashboard" element={<DashboardPage />}>
             <Route path=":projectId" element={<DashboardPage />} /> {/* নেস্টেড রুট */}
           </Route>
-        </Routes>
+           {/* নতুন: সুপার অ্যাডমিন ড্যাশবোর্ড রুট */}
+           <Route path="/super-admin-dashboard" element={<SuperAdminDashboardPage />} />
+           <Route path="*" element={<NotFoundPage />} />
+            </Routes>
       </main>
     </div>
   );

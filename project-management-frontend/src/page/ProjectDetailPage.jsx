@@ -140,15 +140,21 @@ const ProjectDetailPage = () => {
 
   return (
     <>
-      <div className="fixed w-full bg-gradient-to-r from-blue-100  to-indigo-700 text-white p-1 px-5 shadow-lg ">
+      <div className="sticky top-0  flex justify-between items-center w-full bg-gradient-to-r from-blue-100  to-indigo-700 text-white p-1 px-5 shadow-lg ">
         <h1 onClick={() => setModalOpen(true)} className="text-4xl capitalize font-extrabold text-gray-900 mb-4 py-1">
           {project.name}
         </h1>
+      <button
+        className="ml-2 px-3 py-1  bg-green-600 hover:bg-green-700 text-black font-bold rounded-lg shadow-md transition-all duration-200"
+        onClick={() =>setModalOpen(true)}
+      >
+        Manage Member
+      </button>
       </div>
 
       <div className="font-inter bg-gray-50 h-full">
         {/* Task Board */}
-        <div className="grid grid-cols-1 mt-20 p-4 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1  p-4 md:grid-cols-3 gap-6">
           {/* To Do */}
           <div className="bg-blue-50 p-6 rounded-xl shadow-lg border border-blue-300">
             <div className="flex items-center justify-between mb-6">

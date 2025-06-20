@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); // user এখন role প্রপার্টি ধারণ করবে
   const [loading, setLoading] = useState(true);
 
   // কম্পোনেন্ট মাউন্ট হওয়ার সময় ব্যবহারকারীর স্থিতি লোড করুন
@@ -20,11 +20,11 @@ export const AuthProvider = ({ children }) => {
             setUser(null);
           } else {
             const res = await api.get('/auth/me');
-            setUser(res.data); // আপডেট করা ব্যবহারকারীর ডেটা সেট করুন
+            setUser(res.data); // user অবজেক্টে এখন role প্রপার্টি থাকবে
           }
         }
       } catch (error) {
-        console.error('ব্যবহারকারীর তথ্য লোড করতে ত্রুটি:', error);
+        console.error('Failed to load user info:', error);
         localStorage.removeItem('token');
         setUser(null);
       } finally {
@@ -39,12 +39,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.post('/auth/login', { email, password });
       localStorage.setItem('token', res.data.token);
-      const userRes = await api.get('/auth/me'); // সম্পূর্ণ ডেটা আবার আনুন
+      const userRes = await api.get('/auth/me'); // সম্পূর্ণ ডেটা আবার আনুন (role সহ)
       setUser(userRes.data);
       return { success: true };
     } catch (error) {
-      console.error('লগইন ত্রুটি:', error.response?.data?.message || error.message);
-      return { success: false, message: error.response?.data?.message || 'লগইন করতে ব্যর্থ হয়েছে' };
+      console.error('Login error:', error.response?.data?.message || error.message);
+      return { success: false, message: error.response?.data?.message || 'Login failed' };
     }
   };
 
@@ -53,12 +53,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await api.post('/auth/register', { username, email, password });
       localStorage.setItem('token', res.data.token);
-      const userRes = await api.get('/auth/me'); // সম্পূর্ণ ডেটা আবার আনুন
+      const userRes = await api.get('/auth/me'); // সম্পূর্ণ ডেটা আবার আনুন (role সহ)
       setUser(userRes.data);
       return { success: true };
     } catch (error) {
-      console.error('রেজিস্ট্রেশন ত্রুটি:', error.response?.data?.message || error.message);
-      return { success: false, message: error.response?.data?.message || 'রেজিস্ট্রেশন করতে ব্যর্থ হয়েছে' };
+      console.error('Registration error:', error.response?.data?.message || error.message);
+      return { success: false, message: error.response?.data?.message || 'Registration failed' };
     }
   };
 
@@ -75,6 +75,7 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     isAuthenticated: !!user,
+    isSuperAdmin: user?.role === 'super_admin', // নতুন: সুপার অ্যাডমিন স্টেট
   };
 
   return (

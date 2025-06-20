@@ -4,6 +4,7 @@ const { connectDB } = require('./db/db');
 const authRoutes = require('./routes/authRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const taskRoutes = require('./routes/taskRoutes'); // টাস্ক রাউট যোগ করুন
+const superAdminRoutes = require('./routes/superAdminRoutes');
 require('dotenv').config(); // .env ফাইল থেকে পরিবেশ ভেরিয়েবল লোড করুন
 const cors = require('cors');
 const app = express();
@@ -31,6 +32,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 // প্রজেক্ট আইডি সহ টাস্ক রাউট
 app.use('/api/projects/:projectId/tasks', taskRoutes);
+
+app.use('/api/super-admin', superAdminRoutes); //      নতুন: সুপার অ্যাডমিন রাউট যুক্ত করা হয়েছে
+
 
 // সার্ভার চালু করুন
 app.listen(PORT, () => {

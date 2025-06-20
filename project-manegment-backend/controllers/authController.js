@@ -1,7 +1,7 @@
 const userModel = require('../models/userModel');
-const projectModel = require('../models/projectModel'); // projectModel আমদানি করুন
+const projectModel = require('../models/projectModel');
 const jwt = require('jsonwebtoken');
-require('dotenv').config(); // প্রভেদগুলি পান            
+require('dotenv').config();
 
 const authController = {
     // ব্যবহারকারী নিবন্ধন
@@ -14,7 +14,7 @@ const authController = {
                 return res.status(400).json({ message: 'ব্যবহারকারী ইতিমধ্যেই এই ইমেল দিয়ে বিদ্যমান।' });
             }
 
-            user = await userModel.create(username, email, password);
+            user = await userModel.create(username, email, password); // userModel.create এখন ভূমিকা সেট করে
 
             const payload = {
                 user: {
@@ -27,7 +27,8 @@ const authController = {
                 process.env.JWT_SECRET, { expiresIn: '1h' },
                 (err, token) => {
                     if (err) throw err;
-                    res.status(201).json({ message: 'নিবন্ধন সফল হয়েছে!', token, user: { id: user.id, username: user.username, email: user.email } });
+                    // এখানে user অবজেক্টে role অন্তর্ভুক্ত করুন
+                    res.status(201).json({ message: 'নিবন্ধন সফল হয়েছে!', token, user: { id: user.id, username: user.username, email: user.email, role: user.role } });
                 }
             );
         } catch (error) {
@@ -62,7 +63,8 @@ const authController = {
                 process.env.JWT_SECRET, { expiresIn: '1h' },
                 (err, token) => {
                     if (err) throw err;
-                    res.json({ message: 'লগইন সফল হয়েছে!', token, user: { id: user.id, username: user.username, email: user.email } });
+                    // এখানে user অবজেক্টে role অন্তর্ভুক্ত করুন
+                    res.json({ message: 'লগইন সফল হয়েছে!', token, user: { id: user.id, username: user.username, email: user.email, role: user.role } });
                 }
             );
         } catch (error) {
@@ -79,16 +81,14 @@ const authController = {
                 return res.status(404).json({ message: 'ব্যবহারকারী পাওয়া যায়নি।' });
             }
 
-            // ব্যবহারকারীর মালিকানাধীন প্রজেক্টগুলি পান
             const ownedProjects = await projectModel.getOwnedProjectsByUser(req.user.id);
-
-            // ব্যবহারকারীর সদস্যপদগুলি পান
             const memberships = await projectModel.getMembershipsByUser(req.user.id);
 
             res.json({
                 id: user.id,
                 username: user.username,
                 email: user.email,
+                role: user.role, // নতুন: ব্যবহারকারীর ভূমিকা
                 ownedProjects: ownedProjects,
                 memberships: memberships
             });
